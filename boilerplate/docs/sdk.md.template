@@ -1,0 +1,75 @@
+# {{KTM_CREATE_PROJECT_NAME}} C++ SDK guide
+
+This project was generated from the Kinematic Trees kt-node C++ SDK boilerplate. It is a normal editable CMake project plus KTM metadata for native dependency resolution and packaging.
+
+## Project layout
+
+- `include/{{KTM_CREATE_MODULE_NAME}}/robot.hpp` — public project API.
+- `src/robot.cpp` — implementation that calls kt-node native ABI functions.
+- `examples/basic.cpp` — minimal executable example.
+- `tests/smoke.cpp` — smoke test for headers, library link, and runtime loading.
+- `CMakeLists.txt` — CMake build definition for library, example, and smoke test.
+- `scripts/build.sh` — builds the shared library and writes payload to `$KTM_BUILD_OUTPUT/compiled` plus source snapshot to `$KTM_BUILD_OUTPUT/source`.
+- `ktm-pack.json` — editable package-owned pack mode definition.
+
+## Using the SDK
+
+Run through KTM so CMake sees kt-node include/library paths and runtime loader paths:
+
+```bash
+ktm doctor --platform {{KTM_CREATE_PRIMARY_PLATFORM}}
+ktm dev --platform {{KTM_CREATE_PRIMARY_PLATFORM}}
+ktm test --platform {{KTM_CREATE_PRIMARY_PLATFORM}}
+```
+
+In project code:
+
+```cpp
+#include "{{KTM_CREATE_MODULE_NAME}}/robot.hpp"
+#include <iostream>
+
+int main() {
+  {{KTM_CREATE_MODULE_NAME}}::Robot robot;
+  std::cout << robot.status() << "\n";
+}
+```
+
+`Robot::status()` reports the loaded kt-node ABI version.
+
+## Manual C++ workflow
+
+Prefer KTM commands. If you need to run CMake directly, export the KTM environment first:
+
+```bash
+eval "$(ktm env --shell)"
+cmake -S . -B build/manual -DCMAKE_BUILD_TYPE=Release
+cmake --build build/manual
+ctest --test-dir build/manual --output-on-failure
+```
+
+## Packing modes
+
+- `compiled` packages only `compiled/`, including library output and public headers.
+- `compiled-source` composes `compiled` plus `source/`, a separate canonical source snapshot. If composed lists overlap, KTM deduplicates paths deterministically before packaging.
+
+Docs are copied into generated projects for humans/agents, but are intentionally not packaged by default.
+## Dependency ownership / eject review
+
+The default pack modes keep `kinematic-trees/kt-node@{{KTM_CREATE_KT_NODE_VERSION}}` as a KTM-managed dependency. A normal compiled or compiled-source package must not copy KTM store paths, dependency shared libraries, headers, or metadata into the project payload.
+
+A future eject/self-contained flow should be explicit and separately reviewed because it changes who owns dependency updates, license notices, SBOM evidence, and security patching. Until that flow exists, `ktm pack --mode eject` is expected to fail rather than silently vendor dependencies.
+
+## Quick payload inspection
+
+After packing, inspect contents with:
+
+```bash
+tar -tzf _pack/*/{{KTM_CREATE_PRIMARY_PLATFORM}}/*.tar.gz | sort
+```
+
+Expected defaults:
+
+- `compiled`: only runtime/compiled payload roots.
+- `compiled-source`: runtime/compiled payload roots plus separate source-list roots.
+- `docs/`: present in the generated project folder, absent from archives by default.
+- `deps/`, `.ktrees/`, KTM store paths, and kt-node dependency libraries: absent from normal pack archives.
