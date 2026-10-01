@@ -7,9 +7,11 @@
 #include <vector>
 
 #include <flatbuffers/flatbuffers.h>
-#include <bow/data/vision_sample_generated.h>
+#include <kt/messages/vision_sample_generated.h>
 
 namespace ktnode::vision {
+
+namespace messages = kt::messages::vision_sample;
 
 struct ImageFrame {
   std::string source;
@@ -36,26 +38,26 @@ inline std::vector<uint8_t> encode_image_sample(const ImageFrame& frame) {
   auto data = builder.CreateVector(frame.data);
   uint32_t shape_values[3] = {frame.height, frame.width, frame.channels};
   auto shape = builder.CreateVector(shape_values, 3);
-  auto sample = bow::data::CreateImageSample(
+  auto sample = messages::CreateImageSample(
       builder,
       source,
       data,
       shape,
-      bow::data::CompressionFormat_RAW,
-      bow::data::ImageType_RGB,
+      messages::CompressionFormat::RAW,
+      messages::ImageType::RGB,
       0,
       frame.frame_number,
-      bow::data::StereoDesignation_NONE,
+      messages::StereoDesignation::NONE,
       0.0f,
       0.0f,
       true,
       0,
       0,
-      bow::data::MediaPipeline_OTHER,
+      messages::MediaPipeline::OTHER,
       0,
       frame.captured_unix_ns,
-      bow::data::DepthRepresentation_UNSPECIFIED,
-      bow::data::DepthColorization_NONE,
+      messages::DepthRepresentation::UNSPECIFIED,
+      messages::DepthColorization::NONE,
       0.0f);
   builder.Finish(sample, "VSM1");
   const uint8_t* begin = builder.GetBufferPointer();

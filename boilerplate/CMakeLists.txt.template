@@ -28,6 +28,9 @@ else()
   target_link_libraries({{KTM_CREATE_MODULE_NAME}} PUBLIC "${KT_NODE_LIBRARY}")
 endif()
 
+find_package(KTMessages 0.1.0 CONFIG REQUIRED)
+target_link_libraries({{KTM_CREATE_MODULE_NAME}} PUBLIC KTMessages::KTMessages)
+
 add_executable(basic examples/basic.cpp)
 target_link_libraries(basic PRIVATE {{KTM_CREATE_MODULE_NAME}})
 

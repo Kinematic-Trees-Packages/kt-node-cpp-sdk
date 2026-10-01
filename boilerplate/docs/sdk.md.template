@@ -22,6 +22,10 @@ ktm dev --platform {{KTM_CREATE_PRIMARY_PLATFORM}}
 ktm test --platform {{KTM_CREATE_PRIMARY_PLATFORM}}
 ```
 
+KTM also supplies the package-owned `KTMessages::KTMessages` CMake target.
+Include generated datatypes from `kt/messages`; do not copy generated headers
+into the project or SDK.
+
 In project code:
 
 ```cpp

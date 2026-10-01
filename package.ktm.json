@@ -39,6 +39,7 @@
     "urlStrategy": "local-relative"
   },
   "files": [
+    "CMakeLists.txt",
     "boilerplate",
     "scripts/package.sh",
     "package.ktm.json",
