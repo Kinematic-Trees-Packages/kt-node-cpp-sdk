@@ -11,6 +11,8 @@ This project was generated from the Kinematic Trees kt-node C++ SDK boilerplate.
 - `CMakeLists.txt` — CMake build definition for library, example, and smoke test.
 - `scripts/build.sh` — builds the shared library and writes payload to `$KTM_BUILD_OUTPUT/compiled` plus source snapshot to `$KTM_BUILD_OUTPUT/source`.
 - `ktm-pack.json` — editable package-owned pack mode definition.
+- `package.ktm.json` — the only package/process contract.
+- `runtime.json` — sibling deployment-instance configuration referencing `./package.ktm.json`.
 
 ## Using the SDK
 
